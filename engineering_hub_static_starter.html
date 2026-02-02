@@ -1,0 +1,734 @@
+# Engineering Hub — Static Starter
+
+This text document contains the full static starter code for a modular, updatable, and future-upgradeable educational website about Engineering. Save each code block into the file path shown above the block (paths are relative to the project root).
+
+---- FILE: index.html ----
+```html
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="Engineering Hub — Learn about engineering fields, careers, study paths and articles for students." />
+  <title>Engineering Hub — What is Engineering?</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <h1>Engineering Hub</h1>
+      <p class="subtitle">Explore engineering disciplines, careers, and study paths.</p>
+      <nav class="main-nav" aria-label="Primary">
+        <a href="index.html" class="nav-link active">Home</a>
+        <a href="pages/fields.html" class="nav-link">Fields</a>
+        <a href="pages/become-engineer.html" class="nav-link">How to Become an Engineer</a>
+        <a href="pages/articles.html" class="nav-link">Articles</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <h2>What is Engineering?</h2>
+      <p>Engineering applies scientific and mathematical principles to design solutions that improve human life — from buildings and bridges to software and medical devices. Engineering blends creativity, analysis, and practical skills to solve real-world problems.</p>
+      <div class="cta-row">
+        <a class="btn" href="pages/fields.html">Explore Engineering Fields</a>
+        <a class="btn outline" href="pages/become-engineer.html">How to Become an Engineer</a>
+        <a class="btn ghost" href="pages/articles.html">Read Articles</a>
+      </div>
+    </section>
+
+    <section aria-labelledby="major-branches" class="cards-grid">
+      <h3 id="major-branches">Major Engineering Branches</h3>
+      <div id="overview-cards" class="grid"></div>
+    </section>
+
+    <section class="about-author">
+      <h3>About this project</h3>
+      <p>Engineering Hub is a student-built, updatable education resource designed for high-school and early-college students exploring engineering careers. The project is content-driven and easily maintainable—new fields, articles, and institutions are added through JSON files.</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>Built &amp; maintained by <strong>Muhammadaziz Nematillayev</strong> · 2026</p>
+      <p><small>Deployed with GitHub + Netlify. Designed for accessibility and future upgrade to React/Next.js.</small></p>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script src="js/renderFields.js"></script>
+</body>
+</html>
+```
+
+---- FILE: pages/fields.html ----
+```html
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Engineering Fields — Engineering Hub</title>
+  <meta name="description" content="Explore major engineering fields: Mechanical, Electrical, Civil, Computer, Chemical, Aerospace, Biomedical, Environmental, Industrial." />
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <h1><a href="../index.html">Engineering Hub</a></h1>
+      <nav class="main-nav" aria-label="Primary">
+        <a href="../index.html" class="nav-link">Home</a>
+        <a href="fields.html" class="nav-link active">Fields</a>
+        <a href="become-engineer.html" class="nav-link">How to Become an Engineer</a>
+        <a href="articles.html" class="nav-link">Articles</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section>
+      <h2>Engineering Fields</h2>
+      <p>Below are major engineering disciplines. Click a card to view full detail.</p>
+      <div id="fields-container" class="grid"></div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>Built &amp; maintained by <strong>Muhammadaziz Nematillayev</strong> · 2026</p>
+    </div>
+  </footer>
+
+  <script src="../js/main.js"></script>
+  <script src="../js/renderFields.js"></script>
+</body>
+</html>
+```
+
+---- FILE: pages/field.html ----
+```html
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Field — Engineering Hub</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <h1><a href="../index.html">Engineering Hub</a></h1>
+      <nav class="main-nav" aria-label="Primary">
+        <a href="../index.html" class="nav-link">Home</a>
+        <a href="fields.html" class="nav-link active">Fields</a>
+        <a href="become-engineer.html" class="nav-link">How to Become an Engineer</a>
+        <a href="articles.html" class="nav-link">Articles</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <article id="field-article">
+      <!-- field content injected by JS -->
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>Built &amp; maintained by <strong>Muhammadaziz Nematillayev</strong> · 2026</p>
+    </div>
+  </footer>
+
+  <script src="../js/main.js"></script>
+  <script src="../js/renderFields.js"></script>
+  <script>
+    // On this page render the single field based on ?id=mechanical
+    (function(){
+      const id = new URLSearchParams(location.search).get('id');
+      if (!id) {
+        document.getElementById('field-article').innerHTML = '<p>No field selected. Go back to <a href="fields.html">fields list</a>.</p>';
+        return;
+      }
+
+      fetch(getDataPath('data/engineering-fields.json'))
+        .then(r => r.json())
+        .then(list => {
+          const field = list.find(f=> f.id === id);
+          if (!field) {
+            document.getElementById('field-article').innerHTML = '<p>Field not found.</p>';
+            return;
+          }
+
+          document.title = field.name + ' — Engineering Hub';
+
+          const html = `
+            <header>
+              <h2>${field.name}</h2>
+              <p class="muted">${field.description}</p>
+            </header>
+
+            <section>
+              <h3>What they do</h3>
+              <p>${field.whatTheyDo}</p>
+            </section>
+
+            <section>
+              <h3>Skills required</h3>
+              <ul>${field.skills.map(s=> `<li>${s}</li>`).join('')}</ul>
+            </section>
+
+            <section>
+              <h3>Common careers</h3>
+              <ul>${field.careers.map(c=> `<li>${c}</li>`).join('')}</ul>
+            </section>
+
+            <section>
+              <h3>Future outlook</h3>
+              <p>${field.future}</p>
+            </section>
+
+            <a class="btn" href="fields.html">Back to fields</a>
+          `;
+
+          document.getElementById('field-article').innerHTML = html;
+        })
+        .catch(err=>{
+          console.error(err);
+          document.getElementById('field-article').innerHTML = '<p>Failed to load field data.</p>';
+        });
+    })();
+  </script>
+</body>
+</html>
+```
+
+---- FILE: pages/become-engineer.html ----
+```html
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>How to Become an Engineer — Engineering Hub</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <h1><a href="../index.html">Engineering Hub</a></h1>
+      <nav class="main-nav" aria-label="Primary">
+        <a href="../index.html" class="nav-link">Home</a>
+        <a href="fields.html" class="nav-link">Fields</a>
+        <a href="become-engineer.html" class="nav-link active">How to Become an Engineer</a>
+        <a href="articles.html" class="nav-link">Articles</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section>
+      <h2>How to Become an Engineer</h2>
+      <p>This is a practical roadmap from high school to professional engineering roles.</p>
+
+      <h3>High school preparation</h3>
+      <ul>
+        <li>Focus on mathematics (calculus, algebra) and physics</li>
+        <li>Develop problem-solving and project skills</li>
+        <li>Join science clubs, robotics or programming teams</li>
+      </ul>
+
+      <h3>University degree paths</h3>
+      <p>Most engineering careers start with a Bachelor's degree in an engineering discipline. Consider internships and hands-on projects during studies.</p>
+
+      <h3>Skills & certifications</h3>
+      <ul>
+        <li>CAD, programming, lab skills, simulation tools</li>
+        <li>Certifications: FE (Fundamentals of Engineering) where applicable</li>
+      </ul>
+
+      <h3>Internships, projects, and competitions</h3>
+      <p>Participate in internships, contribute to open-source or build projects. Competitions (e.g., robotics, coding contests) are highly valuable.</p>
+
+      <h3>Best institutions (overview)</h3>
+      <p>See <a href="institutions.html">Institutions</a> for curated lists by region and specialization.</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>Built &amp; maintained by <strong>Muhammadaziz Nematillayev</strong> · 2026</p>
+    </div>
+  </footer>
+
+  <script src="../js/main.js"></script>
+</body>
+</html>
+```
+
+---- FILE: pages/institutions.html ----
+```html
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Institutions — Engineering Hub</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <h1><a href="../index.html">Engineering Hub</a></h1>
+      <nav class="main-nav" aria-label="Primary">
+        <a href="../index.html" class="nav-link">Home</a>
+        <a href="fields.html" class="nav-link">Fields</a>
+        <a href="become-engineer.html" class="nav-link">How to Become an Engineer</a>
+        <a href="articles.html" class="nav-link">Articles</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section>
+      <h2>Top Institutions (Sample)</h2>
+      <p>Below is a curated sample by region. This list is designed to be extended via <code>data/institutions.json</code>.</p>
+      <div id="institutions-container" class="grid"></div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>Built &amp; maintained by <strong>Muhammadaziz Nematillayev</strong> · 2026</p>
+    </div>
+  </footer>
+
+  <script src="../js/main.js"></script>
+  <script>
+    fetch(getDataPath('data/institutions.json'))
+      .then(r=>r.json())
+      .then(list=>{
+        const container = document.getElementById('institutions-container');
+        container.innerHTML = list.map(inst=> `
+          <div class="card">
+            <h3>${inst.name}</h3>
+            <p class="muted">${inst.region} · ${inst.specialization.join(', ')}</p>
+            <p>${inst.summary}</p>
+            <p><small>Admission: ${inst.admission || 'Varies'} · Scholarships: ${inst.scholarships || 'Check site'}</small></p>
+          </div>
+        `).join('');
+      })
+      .catch(()=>{ document.getElementById('institutions-container').innerHTML = '<p>Failed to load institutions.</p>'; });
+  </script>
+</body>
+</html>
+```
+
+---- FILE: pages/articles.html ----
+```html
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Articles — Engineering Hub</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <h1><a href="../index.html">Engineering Hub</a></h1>
+      <nav class="main-nav" aria-label="Primary">
+        <a href="../index.html" class="nav-link">Home</a>
+        <a href="fields.html" class="nav-link">Fields</a>
+        <a href="become-engineer.html" class="nav-link">How to Become an Engineer</a>
+        <a href="articles.html" class="nav-link active">Articles</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section>
+      <h2>Articles</h2>
+      <p>Latest engineering guides and advice.</p>
+      <div id="articles-list" class="grid"></div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>Built &amp; maintained by <strong>Muhammadaziz Nematillayev</strong> · 2026</p>
+    </div>
+  </footer>
+
+  <script src="../js/main.js"></script>
+  <script src="../js/renderArticles.js"></script>
+</body>
+</html>
+```
+
+---- FILE: pages/article.html ----
+```html
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Article — Engineering Hub</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <h1><a href="../index.html">Engineering Hub</a></h1>
+      <nav class="main-nav" aria-label="Primary">
+        <a href="../index.html" class="nav-link">Home</a>
+        <a href="fields.html" class="nav-link">Fields</a>
+        <a href="become-engineer.html" class="nav-link">How to Become an Engineer</a>
+        <a href="articles.html" class="nav-link">Articles</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <article id="article-body"></article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>Built &amp; maintained by <strong>Muhammadaziz Nematillayev</strong> · 2026</p>
+    </div>
+  </footer>
+
+  <script src="../js/main.js"></script>
+  <script>
+    (function(){
+      const id = new URLSearchParams(location.search).get('id');
+      if (!id) {
+        document.getElementById('article-body').innerHTML = '<p>No article selected.</p>';
+        return;
+      }
+
+      fetch(getDataPath('data/articles.json'))
+        .then(r=>r.json())
+        .then(list=>{
+          const art = list.find(a=> a.id === id);
+          if (!art) {
+            document.getElementById('article-body').innerHTML = '<p>Article not found.</p>';
+            return;
+          }
+
+          document.title = art.title + ' — Engineering Hub';
+          document.getElementById('article-body').innerHTML = `
+            <header>
+              <h2>${art.title}</h2>
+              <p class="muted">${art.date} · ${art.category}</p>
+            </header>
+            <section>${art.content}</section>
+            <a class="btn" href="articles.html">Back to articles</a>
+          `;
+        })
+        .catch(()=>{ document.getElementById('article-body').innerHTML = '<p>Failed to load article.</p>'; });
+    })();
+  </script>
+</body>
+</html>
+```
+
+---- FILE: css/style.css ----
+```css
+:root{
+  --bg:#0b1220;
+  --card:#11151b;
+  --text:#e8eef8;
+  --muted:#9aa4b2;
+  --accent:#00d4ff;
+  --accent2:#ff6b35;
+  --radius:12px;
+  --max:1200px;
+}
+*{box-sizing:border-box}
+body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,'Work Sans',sans-serif;background:var(--bg);color:var(--text);margin:0;line-height:1.6}
+.container{max-width:var(--max);margin:0 auto;padding:2rem}
+.site-header{border-bottom:1px solid rgba(255,255,255,0.04);padding:1rem 0}
+.site-header h1{font-family:'Playfair Display',serif;margin:0;font-size:1.6rem}
+.subtitle{color:var(--muted);margin-top:0.25rem}
+.main-nav{margin-top:0.5rem;display:flex;gap:1rem}
+.main-nav .nav-link{color:var(--muted);text-decoration:none;padding:0.35rem 0.5rem;border-radius:6px}
+.main-nav .nav-link.active{background:rgba(255,255,255,0.04);color:var(--text)}
+.hero{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:2rem;border-radius:12px;margin:1.5rem 0}
+.cta-row{display:flex;gap:0.75rem;margin-top:1rem}
+.btn{background:var(--accent);color:#041226;padding:0.6rem 1rem;border-radius:8px;text-decoration:none;font-weight:600}
+.btn.outline{background:transparent;color:var(--accent);border:1px solid rgba(0,212,255,0.12)}
+.btn.ghost{background:transparent;border:1px dashed rgba(255,255,255,0.04);color:var(--muted)}
+.cards-grid h3{margin-top:1.5rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-top:1rem}
+.card{background:var(--card);padding:1rem;border-radius:var(--radius);border:1px solid rgba(255,255,255,0.03)}
+.card h3{margin:0 0 0.5rem 0}
+.muted{color:var(--muted)}
+.site-footer{margin-top:2.5rem;padding:1.5rem 0;border-top:1px solid rgba(255,255,255,0.03);color:var(--muted)}
+@media (max-width:640px){.cta-row{flex-direction:column}}
+
+/* accessibility: reduce motion */
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* small helpers */
+.kv{display:flex;gap:0.5rem;align-items:center}
+```
+
+---- FILE: js/main.js ----
+```js
+// main.js — shared utilities and small UI helpers
+(function(){
+  window.getDataPath = function(relative) {
+    // If page is inside /pages/ prefix with ../
+    if (location.pathname.split('/').some(s=> s === 'pages')) return '../' + relative;
+    return relative;
+  }
+
+  // keyboard-friendly nav (Enter/Space)
+  document.addEventListener('DOMContentLoaded', ()=>{
+    document.querySelectorAll('.main-nav .nav-link').forEach(link=>{
+      link.setAttribute('tabindex', '0');
+      link.addEventListener('keydown', e=>{
+        if (e.key === 'Enter' || e.key === ' ') link.click();
+      });
+    });
+
+    // set active nav based on pathname
+    const path = location.pathname;
+    document.querySelectorAll('.main-nav .nav-link').forEach(a=>{
+      try{
+        if (a.getAttribute('href') && path.endsWith(a.getAttribute('href').replace('../',''))) {
+          a.classList.add('active');
+        }
+      }catch(e){}
+    });
+  });
+})();
+```
+
+---- FILE: js/renderFields.js ----
+```js
+// renderFields.js — displays overview cards and fields listing
+(function(){
+  function renderOverviewCards(list, container) {
+    container.innerHTML = list.slice(0,6).map(f=> `
+      <article class="card">
+        <h3>${f.name}</h3>
+        <p class="muted">${f.description}</p>
+        <p><a class="btn" href="${getDataPath('').includes('..') ? 'field.html?id='+f.id : 'pages/field.html?id='+f.id}">Learn more</a></p>
+      </article>
+    `).join('');
+  }
+
+  function renderFieldsList(list, container) {
+    container.innerHTML = list.map(f=> `
+      <a class="card" href="field.html?id=${f.id}">
+        <h3>${f.name}</h3>
+        <p class="muted">${f.description}</p>
+      </a>
+    `).join('');
+  }
+
+  // Auto-run for pages that include #overview-cards or #fields-container
+  document.addEventListener('DOMContentLoaded', ()=>{
+    const overviewEl = document.getElementById('overview-cards');
+    const fieldsEl = document.getElementById('fields-container');
+    const dataPath = getDataPath('data/engineering-fields.json');
+
+    fetch(dataPath)
+      .then(r=>r.json())
+      .then(list=>{
+        if (overviewEl) renderOverviewCards(list, overviewEl);
+        if (fieldsEl) renderFieldsList(list, fieldsEl);
+      })
+      .catch(err=>{
+        if (overviewEl) overviewEl.innerHTML = '<p>Failed to load preview cards.</p>';
+        if (fieldsEl) fieldsEl.innerHTML = '<p>Failed to load fields list.</p>';
+        console.error('Failed to load fields', err);
+      });
+  });
+})();
+```
+
+---- FILE: js/renderArticles.js ----
+```js
+// renderArticles.js — show list of articles
+(function(){
+  function render(list, container) {
+    container.innerHTML = list.map(a=> `
+      <a class="card" href="article.html?id=${a.id}">
+        <h3>${a.title}</h3>
+        <p class="muted">${a.date} · ${a.category}</p>
+        <p>${a.excerpt}</p>
+      </a>
+    `).join('');
+  }
+
+  document.addEventListener('DOMContentLoaded', ()=>{
+    const el = document.getElementById('articles-list');
+    if (!el) return;
+    fetch(getDataPath('data/articles.json'))
+      .then(r=>r.json())
+      .then(list=> render(list, el))
+      .catch(()=> el.innerHTML = '<p>Failed to load articles.</p>');
+  });
+})();
+```
+
+---- FILE: data/engineering-fields.json ----
+```json
+[
+  {
+    "id":"mechanical",
+    "name":"Mechanical Engineering",
+    "description":"Design, analyze and manufacture mechanical systems.",
+    "whatTheyDo":"Design machines, engines, HVAC, robotics, and tools that solve mechanical problems.",
+    "skills":["Calculus","Statics & Dynamics","CAD","Materials"],
+    "careers":["Mechanical Engineer","Design Engineer","Manufacturing Engineer"],
+    "future":"Strong demand in automation, robotics, and sustainable manufacturing."
+  },
+  {
+    "id":"electrical",
+    "name":"Electrical Engineering",
+    "description":"Work with electricity, electronics and electromagnetics.",
+    "whatTheyDo":"Design circuits, power systems, control systems, and telecommunication equipment.",
+    "skills":["Circuit theory","Signal processing","Electromagnetics","Embedded systems"],
+    "careers":["Electrical Engineer","Power Systems Engineer","Controls Engineer"],
+    "future":"Growth in renewable energy, smart grids, and IoT devices."
+  },
+  {
+    "id":"civil",
+    "name":"Civil Engineering",
+    "description":"Design and maintain infrastructure such as bridges and water systems.",
+    "whatTheyDo":"Plan, design and oversee construction of buildings, roads, and water supply systems.",
+    "skills":["Statics","Geotechnics","Structural analysis","Project management"],
+    "careers":["Structural Engineer","Geotechnical Engineer","Transportation Engineer"],
+    "future":"Continued demand for sustainable infrastructure and resilient design."
+  },
+  {
+    "id":"computer",
+    "name":"Computer / Software Engineering",
+    "description":"Develop software, systems and computer hardware.",
+    "whatTheyDo":"Build software, design computer architecture, work on networks and cybersecurity.",
+    "skills":["Programming","Algorithms","Operating systems","Computer architecture"],
+    "careers":["Software Engineer","Systems Engineer","Embedded Systems Engineer"],
+    "future":"High demand in AI, cloud computing, and embedded systems."
+  },
+  {
+    "id":"chemical",
+    "name":"Chemical Engineering",
+    "description":"Apply chemistry and processes to produce materials and chemicals.",
+    "whatTheyDo":"Design chemical processes, optimize production and ensure safety in manufacturing.",
+    "skills":["Thermodynamics","Reaction engineering","Transport phenomena","Process control"],
+    "careers":["Process Engineer","Chemical Engineer","R&amp;D Engineer"],
+    "future":"Important for sustainable chemistry, energy, and materials innovation."
+  },
+  {
+    "id":"aerospace",
+    "name":"Aerospace Engineering",
+    "description":"Design aircraft and spacecraft systems.",
+    "whatTheyDo":"Work on aerodynamics, propulsion, flight mechanics and structures.",
+    "skills":["Aerodynamics","Propulsion","Structural analysis","Avionics"],
+    "careers":["Aerospace Engineer","Flight Test Engineer","Propulsion Engineer"],
+    "future":"Growing space industry and unmanned aerial systems."
+  },
+  {
+    "id":"biomedical",
+    "name":"Biomedical Engineering",
+    "description":"Combine biology and engineering to develop healthcare solutions.",
+    "whatTheyDo":"Design medical devices, imaging systems, prosthetics and biomaterials.",
+    "skills":["Biology","Biomechanics","Medical imaging","Materials science"],
+    "careers":["Biomedical Engineer","Clinical Engineer","R&amp;D Scientist"],
+    "future":"Expanding field with growth in medical devices and biotech."
+  },
+  {
+    "id":"environmental",
+    "name":"Environmental Engineering",
+    "description":"Solve environmental problems related to water, air and waste.",
+    "whatTheyDo":"Design treatment systems, assess impact, and develop sustainable solutions.",
+    "skills":["Water treatment","Environmental chemistry","Modeling","GIS"],
+    "careers":["Environmental Engineer","Water Resources Engineer","Sustainability Specialist"],
+    "future":"Critical for climate resilience and sustainable development."
+  },
+  {
+    "id":"industrial",
+    "name":"Industrial Engineering",
+    "description":"Optimize systems and processes in manufacturing and services.",
+    "whatTheyDo":"Work on operations research, supply chains, quality, and efficiency improvements.",
+    "skills":["Statistics","Optimization","Process design","Supply chain"],
+    "careers":["Industrial Engineer","Operations Analyst","Supply Chain Manager"],
+    "future":"High demand in logistics, automation and system optimization."
+  }
+]
+```
+
+---- FILE: data/articles.json ----
+```json
+[
+  {
+    "id":"how-to-pick-major",
+    "title":"How to Choose an Engineering Major: A Practical Guide",
+    "date":"2026-02-01",
+    "category":"Career Advice",
+    "excerpt":"A step-by-step approach to picking a major based on your interests, strengths, and career goals.",
+    "content":"<p>Choosing an engineering major is one of the most important decisions in a student\'s academic path. Start by listing subjects you enjoy, explore sample projects in each field, and speak to professionals. Consider internship opportunities and regional job markets.</p>"
+  },
+  {
+    "id":"internships-matter",
+    "title":"Internships: How to Get Real Engineering Experience",
+    "date":"2026-01-10",
+    "category":"Study Tips",
+    "excerpt":"Why internships are crucial and how to secure them as a student.",
+    "content":"<p>Internships bridge the gap between coursework and professional work. Apply early, build a GitHub or project portfolio, and network via LinkedIn and professors.</p>"
+  }
+]
+```
+
+---- FILE: data/institutions.json ----
+```json
+[
+  {
+    "id":"mit",
+    "name":"Massachusetts Institute of Technology (MIT)",
+    "region":"USA",
+    "specialization":["Mechanical","Electrical","Computer","Aerospace"],
+    "summary":"Top-ranked technical university known for research and engineering.",
+    "admission":"Highly selective — strong SAT/ACT, stellar recommendations",
+    "scholarships":"Need-based financial aid available for international students through MIT aid"
+  },
+  {
+    "id":"imperial",
+    "name":"Imperial College London",
+    "region":"Europe",
+    "specialization":["Chemical","Mechanical","Aerospace","Biomedical"],
+    "summary":"Strong engineering programs with strong industry ties.",
+    "admission":"A-levels or equivalent; strong math background",
+    "scholarships":"Various scholarships and external funding"
+  }
+]
+```
+
+---- FILE: README.md ----
+```md
+# Engineering Hub — Static Starter
+
+This project is a static, content-driven starter for an educational engineering website. It uses JSON files as the content source to make adding new fields, institutions, and articles easy without changing layout code.
+
+## How to use
+1. Save each file from this document into paths exactly as named.
+2. Serve the folder via GitHub Pages, Netlify, or any static host.
+3. To add content: edit or add entries to the JSON files in `/data/`.
+
+## Future upgrades
+- Migrate to Next.js and use Markdown or a headless CMS (Sanity, Contentful) for articles.
+- Add search and filters.
+- Add admin CMS for non-technical updates.
+
+## Deploy
+Recommended: push to GitHub and deploy with Netlify for automatic deploys on push.
+```
+
+---- END ----
